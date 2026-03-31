@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
-import { BaseResponseDto } from 'src/common/base_reponse.dto';
 import { UsersService } from 'src/users/users.service';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -13,6 +11,7 @@ export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) { };
 
   async login(loginDto: LoginDto): Promise<{ access: string, refresh: string }> {
@@ -32,8 +31,8 @@ export class AuthService {
     };
 
     const refreshToken = this.jwtService.sign(refreshPayload, {
-      secret: process.env.JWT_REFRESH,
-      expiresIn: process.env.JWT_REFRESH_EXPIRE as any,
+      secret: this.configService.get<string>('JWT_REFRESH'),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE') as JwtSignOptions['expiresIn'],
     });
 
     await this.userService.updateLastLoginDate(user.userEmail);
@@ -44,6 +43,21 @@ export class AuthService {
     }
 
 
+  }
+
+
+  async refresh(userSeq: number): Promise<{ access: string }> {
+    const user = await this.userService.findUserDoubleCheck(userSeq);
+
+    const payload = {
+      sub: user.userSeq,
+      email: user.userEmail,
+      level: user.userLevel,
+    };
+
+    return {
+      access: this.jwtService.sign(payload),
+    };
   }
 
 

@@ -1,9 +1,10 @@
 # Environment
 .env
-.env.*
 .env.development
 .env.test
 .env.production
+.env.local
+!.env.example
 
 # Dependencies
 node_modules/
