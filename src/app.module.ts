@@ -25,6 +25,7 @@ import { SecurityModule } from './password/security.module';
     LoggerModule,
     DatabaseModule,
     SecurityModule,
+
   ]
 })
 export class AppModule { }

@@ -11,7 +11,12 @@
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": "./",
+    "paths":{},
     "skipLibCheck": true,
-    "incremental": true
+    "incremental": true,
+
+    "esModuleInterop": true, // CommonJS 모듈을 ES Module처럼 import할 수 있게 해주는 옵션
+    "moduleResolution": "node" // import 경로를 Node.js 방식으로 해석하는 옵션입니다.
+  
   }
 }
